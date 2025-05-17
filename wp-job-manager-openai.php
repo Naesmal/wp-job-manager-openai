@@ -112,6 +112,7 @@ class WPJM_OpenAI {
         require_once WPJM_OPENAI_PLUGIN_DIR . 'includes/class-wpjm-openai-installer.php';
         require_once WPJM_OPENAI_PLUGIN_DIR . 'includes/class-wpjm-openai-integrations.php';
         require_once WPJM_OPENAI_PLUGIN_DIR . 'includes/class-wpjm-openai-logs.php';
+        require_once WPJM_OPENAI_PLUGIN_DIR . 'includes/admin/class-wpjm-openai-dashboard.php';
     }
 
     /**

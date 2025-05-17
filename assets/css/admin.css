@@ -1,0 +1,95 @@
+/**
+ * Styles pour l'interface d'administration du plugin WP Job Manager OpenAI
+ */
+
+ .wpjm-openai-test-section {
+    margin-top: 30px;
+    background: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+}
+
+.wpjm-openai-test-section h2 {
+    margin-top: 0;
+}
+
+#wpjm-openai-test-result {
+    margin-top: 15px;
+    padding: 10px;
+    border-radius: 4px;
+}
+
+#wpjm-openai-test-result.success {
+    background-color: #dff0d8;
+    color: #3c763d;
+    border: 1px solid #d6e9c6;
+}
+
+#wpjm-openai-test-result.error {
+    background-color: #f2dede;
+    color: #a94442;
+    border: 1px solid #ebccd1;
+}
+
+.wpjm-openai-settings-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+.wpjm-openai-settings-table th, 
+.wpjm-openai-settings-table td {
+    padding: 10px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+.wpjm-openai-settings-table th {
+    background-color: #f5f5f5;
+}
+
+/* Style pour le bouton de traitement IA dans le tableau de bord des offres */
+.ai-process-button {
+    background-color: #5b9dd9 !important;
+    color: white !important;
+    border-color: #4a89c7 !important;
+}
+
+.ai-process-button:hover {
+    background-color: #4a89c7 !important;
+}
+
+/* Indicateur de traitement IA dans la liste des offres */
+.ai-processed-indicator {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 11px;
+    margin-left: 5px;
+    vertical-align: middle;
+}
+
+.ai-processed-indicator.processed {
+    background-color: #dff0d8;
+    color: #3c763d;
+}
+
+.ai-processed-indicator.error {
+    background-color: #f2dede;
+    color: #a94442;
+}
+
+/* Style pour le slider de température */
+#wpjm_openai_temperature {
+    width: 200px;
+    vertical-align: middle;
+}
+
+#temperature_value {
+    display: inline-block;
+    width: 30px;
+    text-align: center;
+    margin-left: 5px;
+    font-weight: bold;
+}

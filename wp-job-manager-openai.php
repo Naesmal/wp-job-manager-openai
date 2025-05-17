@@ -156,29 +156,48 @@ class WPJM_OpenAI {
      * Traitement d'une offre d'emploi lors de la sauvegarde
      */
     public function process_job_on_save($job_id, $values) {
-        // S'assurer que le traitement n'est pas déjà en cours pour éviter les doublons
-        if (get_post_meta($job_id, '_ai_processing_in_progress', true)) {
+        // Journaliser le début du traitement
+        wpjm_openai_debug_log("Début du traitement de l'offre #$job_id");
+        
+        // Vérifier si la clé API est définie
+        if (empty($this->api_key)) {
+            wpjm_openai_debug_log("Clé API non définie - Traitement annulé");
             return;
         }
-
+        
+        // S'assurer que le traitement automatique est activé
+        if ('yes' !== get_option('wpjm_openai_auto_process', 'yes')) {
+            wpjm_openai_debug_log("Traitement automatique désactivé");
+            return;
+        }
+        
+        // S'assurer que le traitement n'est pas déjà en cours pour éviter les doublons
+        if (get_post_meta($job_id, '_ai_processing_in_progress', true)) {
+            wpjm_openai_debug_log("Traitement déjà en cours pour l'offre #$job_id");
+            return;
+        }
+    
         // Marquer l'offre comme étant en cours de traitement
         update_post_meta($job_id, '_ai_processing_in_progress', '1');
-
+    
         try {
             // Récupérer le processeur OpenAI
             $processor = WPJM_OpenAI_Processor::get_instance();
             
             // Traiter l'offre
+            wpjm_openai_debug_log("Lancement du traitement pour l'offre #$job_id");
             $processor->process_job($job_id);
             
             // Journaliser le traitement réussi
             update_post_meta($job_id, '_ai_processed', '1');
             update_post_meta($job_id, '_ai_processed_date', current_time('mysql'));
+            wpjm_openai_debug_log("Traitement terminé avec succès pour l'offre #$job_id");
         } catch (Exception $e) {
             // Journaliser l'erreur
             update_post_meta($job_id, '_ai_processing_error', $e->getMessage());
+            wpjm_openai_debug_log("Erreur lors du traitement de l'offre #$job_id: " . $e->getMessage());
         }
-
+    
         // Supprimer le marqueur de traitement en cours
         delete_post_meta($job_id, '_ai_processing_in_progress');
     }

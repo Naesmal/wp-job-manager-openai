@@ -3,6 +3,19 @@
  * Processeur OpenAI pour les offres d'emploi
  */
 
+ /**
+ * Fonction de journalisation pour le débogage
+ */
+function wpjm_openai_debug_log($message) {
+    if (defined('WP_DEBUG') && WP_DEBUG === true) {
+        if (is_array($message) || is_object($message)) {
+            error_log(print_r($message, true));
+        } else {
+            error_log($message);
+        }
+    }
+}
+
 if (!defined('ABSPATH')) {
     exit;
 }
@@ -221,6 +234,10 @@ class WPJM_OpenAI_Processor {
      * Faire une requête API à OpenAI
      */
     private function request_openai_api($messages) {
+        // Journaliser les messages envoyés à l'API
+        wpjm_openai_debug_log("Envoi de la requête à l'API OpenAI");
+        wpjm_openai_debug_log("Modèle utilisé: " . $this->model);
+        
         $api_url = 'https://api.openai.com/v1/chat/completions';
 
         $headers = array(
@@ -235,6 +252,8 @@ class WPJM_OpenAI_Processor {
             'temperature' => $this->temperature,
         ));
 
+        wpjm_openai_debug_log("Paramètres de la requête: max_tokens=" . $this->max_tokens . ", temperature=" . $this->temperature);
+
         $response = wp_remote_post($api_url, array(
             'headers' => $headers,
             'body' => $body,
@@ -242,6 +261,7 @@ class WPJM_OpenAI_Processor {
         ));
 
         if (is_wp_error($response)) {
+            wpjm_openai_debug_log("Erreur WP: " . $response->get_error_message());
             throw new Exception($response->get_error_message());
         }
 
@@ -250,6 +270,9 @@ class WPJM_OpenAI_Processor {
             $body = wp_remote_retrieve_body($response);
             $error_data = json_decode($body, true);
             $error_message = isset($error_data['error']['message']) ? $error_data['error']['message'] : __('Erreur API inconnue', 'wpjm-openai');
+            
+            wpjm_openai_debug_log("Erreur API (Code: $response_code): " . $error_message);
+            
             throw new Exception($error_message);
         }
 
@@ -257,7 +280,15 @@ class WPJM_OpenAI_Processor {
         $data = json_decode($body, true);
 
         if (!isset($data['choices'][0]['message']['content'])) {
+            wpjm_openai_debug_log("Réponse API invalide: " . print_r($data, true));
             throw new Exception(__('Réponse API invalide', 'wpjm-openai'));
+        }
+
+        wpjm_openai_debug_log("Réponse API reçue avec succès");
+        
+        // Journaliser l'utilisation des tokens
+        if (isset($data['usage'])) {
+            wpjm_openai_debug_log("Tokens utilisés: " . $data['usage']['total_tokens']);
         }
 
         return $data['choices'][0]['message']['content'];

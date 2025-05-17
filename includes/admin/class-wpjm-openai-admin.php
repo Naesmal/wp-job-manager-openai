@@ -35,6 +35,23 @@ class WPJM_OpenAI_Admin {
         
         // Ajouter des styles et scripts admin
         add_action('admin_enqueue_scripts', array($this, 'enqueue_admin_scripts'));
+
+        add_action('add_meta_boxes', array($this, 'add_ai_status_metabox'));
+    }
+
+    public function add_ai_status_metabox() {
+        add_meta_box(
+            'wpjm_openai_status',
+            __('Statut IA', 'wpjm-openai'),
+            array($this, 'render_ai_status_metabox'),
+            'job_listing',
+            'side',
+            'default'
+        );
+    }
+    
+    public function render_ai_status_metabox($post) {
+        include WPJM_OPENAI_PLUGIN_DIR . 'templates/admin/job-ai-status-metabox.php';
     }
 
     /**
@@ -55,6 +72,18 @@ class WPJM_OpenAI_Admin {
      * Enregistrer les paramètres
      */
     public function register_settings() {
+        // Ajouter ceci pour assurer une redirection après enregistrement
+        add_action('admin_init', function() {
+            if (isset($_GET['settings-updated']) && $_GET['settings-updated']) {
+                // Ajouter un message de notification
+                add_settings_error(
+                    'wpjm_openai_settings',
+                    'settings_updated',
+                    __('Paramètres enregistrés avec succès.', 'wpjm-openai'),
+                    'updated'
+                );
+            }
+        });
         register_setting('wpjm_openai_settings', 'wpjm_openai_api_key');
         register_setting('wpjm_openai_settings', 'wpjm_openai_model', array(
             'default' => 'gpt-3.5-turbo', // Utiliser GPT-3.5 par défaut pour un meilleur rapport coût/performances

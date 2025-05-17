@@ -1,8 +1,9 @@
 /**
- * Styles pour l'interface d'administration du plugin WP Job Manager OpenAI
+ * Styles fusionnés pour l'interface d'administration du plugin WP Job Manager OpenAI
  */
 
- .wpjm-openai-test-section {
+/* Styles pour la page de paramètres OpenAI */
+.wpjm-openai-test-section {
     margin-top: 30px;
     background: #fff;
     padding: 20px;
@@ -14,22 +15,25 @@
     margin-top: 0;
 }
 
-#wpjm-openai-test-result {
+#wpjm-openai-test-result,
+.wpjm-openai-test-result {
     margin-top: 15px;
     padding: 10px;
     border-radius: 4px;
 }
 
-#wpjm-openai-test-result.success {
-    background-color: #dff0d8;
-    color: #3c763d;
-    border: 1px solid #d6e9c6;
+#wpjm-openai-test-result.success,
+.wpjm-openai-test-result.success {
+    background-color: #e7f9e7;
+    border: 1px solid #b7e3b7;
+    color: #2e7d32;
 }
 
-#wpjm-openai-test-result.error {
-    background-color: #f2dede;
-    color: #a94442;
-    border: 1px solid #ebccd1;
+#wpjm-openai-test-result.error,
+.wpjm-openai-test-result.error {
+    background-color: #fdeaea;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
 }
 
 .wpjm-openai-settings-table {
@@ -49,35 +53,101 @@
     background-color: #f5f5f5;
 }
 
-/* Style pour le bouton de traitement IA dans le tableau de bord des offres */
-.ai-process-button {
-    background-color: #5b9dd9 !important;
-    color: white !important;
-    border-color: #4a89c7 !important;
+/* Styles pour la metabox de statut IA */
+.wpjm-openai-metabox {
+    padding: 10px 0;
 }
 
-.ai-process-button:hover {
-    background-color: #4a89c7 !important;
+.wpjm-openai-status {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    border-radius: 4px;
+    margin-bottom: 10px;
 }
 
-/* Indicateur de traitement IA dans la liste des offres */
+.wpjm-openai-status.success {
+    background-color: #e7f9e7;
+    border: 1px solid #b7e3b7;
+    color: #2e7d32;
+}
+
+.wpjm-openai-status.pending {
+    background-color: #fff8e1;
+    border: 1px solid #ffe082;
+    color: #ff8f00;
+}
+
+.wpjm-openai-date {
+    margin-left: auto;
+    font-size: 12px;
+    color: #666;
+}
+
+.wpjm-openai-error {
+    background-color: #fdeaea;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+    padding: 8px 12px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+.wpjm-openai-actions {
+    margin-top: 15px;
+}
+
+/* Badges et indicateurs pour les offres traitées par IA */
+.ai-badge {
+    display: inline-flex;
+    align-items: center;
+    background-color: #e7f9e7;
+    color: #2e7d32;
+    font-size: 12px;
+    padding: 3px 8px;
+    border-radius: 12px;
+    margin-left: 6px;
+}
+
+.ai-badge svg {
+    margin-right: 4px;
+}
+
+.ai-status {
+    margin-top: 6px;
+    font-size: 12px;
+}
+
 .ai-processed-indicator {
     display: inline-block;
     padding: 2px 6px;
-    border-radius: 3px;
+    border-radius: 10px;
+    margin-right: 5px;
     font-size: 11px;
-    margin-left: 5px;
     vertical-align: middle;
 }
 
 .ai-processed-indicator.processed {
-    background-color: #dff0d8;
-    color: #3c763d;
+    background-color: #e7f9e7;
+    color: #2e7d32;
 }
 
 .ai-processed-indicator.error {
-    background-color: #f2dede;
-    color: #a94442;
+    background-color: #fdeaea;
+    color: #721c24;
+    cursor: help;
+}
+
+/* Style pour le bouton de traitement IA */
+.ai-process-button {
+    background-color: #4CAF50 !important;
+    color: white !important;
+    border-color: #43A047 !important;
+}
+
+.ai-process-button:hover {
+    background-color: #388E3C !important;
+    border-color: #2E7D32 !important;
 }
 
 /* Style pour le slider de température */

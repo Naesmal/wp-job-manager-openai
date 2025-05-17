@@ -48,9 +48,49 @@ class WPJM_OpenAI {
 
         // Initialiser les hooks
         $this->init_hooks();
+        
+        // Initialiser les templates
+        $this->init_templates();
 
         // Charger la clé API depuis les paramètres
         $this->api_key = get_option('wpjm_openai_api_key', '');
+
+        // Ajouter un hook direct pour GoFetchJobs dans le init_hooks
+        add_action('plugins_loaded', function() {
+            if (class_exists('GoFetchJobs')) {
+                error_log('GoFetchJobs détecté - Configuration des hooks pour WP Job Manager OpenAI');
+                add_action('gofetchjobs_after_import_job', function($job_id) {
+                    error_log('Hook gofetchjobs_after_import_job déclenché pour le job #' . $job_id);
+                    
+                    // Vérifier si la clé API est définie
+                    if (empty(get_option('wpjm_openai_api_key', ''))) {
+                        error_log('Clé API non définie - Traitement annulé pour le job #' . $job_id);
+                        return;
+                    }
+                    
+                    // S'assurer que le traitement automatique est activé
+                    if ('yes' !== get_option('wpjm_openai_auto_process', 'yes')) {
+                        error_log('Traitement automatique désactivé - Offre #' . $job_id . ' non traitée');
+                        return;
+                    }
+                    
+                    try {
+                        // Traiter l'offre d'emploi
+                        $processor = WPJM_OpenAI_Processor::get_instance();
+                        $processor->process_job($job_id);
+                        
+                        // Marquer comme traité
+                        update_post_meta($job_id, '_ai_processed', '1');
+                        update_post_meta($job_id, '_ai_processed_date', current_time('mysql'));
+                        
+                        error_log('Traitement IA réussi pour le job #' . $job_id);
+                    } catch (Exception $e) {
+                        error_log('Erreur lors du traitement IA pour le job #' . $job_id . ': ' . $e->getMessage());
+                        update_post_meta($job_id, '_ai_processing_error', $e->getMessage());
+                    }
+                }, 10, 1);
+            }
+        });
     }
 
     /**
@@ -103,6 +143,18 @@ class WPJM_OpenAI {
         if (is_admin()) {
             WPJM_OpenAI_Admin::get_instance();
         }
+    }
+    
+    /**
+     * Initialiser les templates
+     */
+    private function init_templates() {
+        // Ajouter le badge IA aux offres d'emploi
+        add_action('single_job_listing_meta_start', array($this, 'display_ai_processed_badge'));
+        
+        // Ajouter le bouton IA au tableau de bord
+        add_filter('job_manager_job_dashboard_columns', array($this, 'add_ai_process_button'), 25);
+        add_action('job_manager_job_dashboard_column_ai_process', array($this, 'render_ai_process_button'), 10, 2);
     }
 
     /**
@@ -244,14 +296,7 @@ class WPJM_OpenAI {
      * Afficher le bouton de traitement IA pour une offre
      */
     public function render_ai_process_button($job) {
-        $url = admin_url('admin-post.php');
-        $url = add_query_arg(array(
-            'action' => 'process_job_with_ai',
-            'job_id' => $job->ID,
-            '_wpnonce' => wp_create_nonce('process_job_with_ai_' . $job->ID),
-        ), $url);
-        
-        echo '<a href="' . esc_url($url) . '" class="button ai-process-button">' . __('Traiter avec IA', 'wpjm-openai') . '</a>';
+        include WPJM_OPENAI_PLUGIN_DIR . 'templates/job-dashboard-ai-button.php';
     }
 
     /**
@@ -275,6 +320,13 @@ class WPJM_OpenAI {
         // Rediriger vers la page précédente
         wp_safe_redirect(wp_get_referer() ?: admin_url());
         exit;
+    }
+
+    /**
+     * Afficher le badge "Traité par IA"
+     */
+    public function display_ai_processed_badge() {
+        include WPJM_OPENAI_PLUGIN_DIR . 'templates/ai-processed-badge.php';
     }
 }
 

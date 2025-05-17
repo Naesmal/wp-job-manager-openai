@@ -148,9 +148,14 @@ class WPJM_OpenAI_Admin {
         if ('job_listing_page_wpjm-openai-settings' !== $hook) {
             return;
         }
-
+    
         wp_enqueue_style('wpjm-openai-admin', WPJM_OPENAI_PLUGIN_URL . 'assets/css/admin.css', array(), WPJM_OPENAI_VERSION);
         wp_enqueue_script('wpjm-openai-admin', WPJM_OPENAI_PLUGIN_URL . 'assets/js/admin.js', array('jquery'), WPJM_OPENAI_VERSION, true);
+        
+        // Ajouter le nonce pour la sécurité AJAX
+        wp_localize_script('wpjm-openai-admin', 'wpjm_openai_admin', array(
+            'nonce' => wp_create_nonce('wpjm_openai_admin_nonce'),
+        ));
     }
 
     /**
